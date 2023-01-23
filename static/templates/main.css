@@ -1,0 +1,45 @@
+:root {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.grid-container {
+  display: grid;
+  max-width: 100rem;
+  height: 100rem;
+  overflow: auto;
+  grid-template-columns: repeat(auto-fill, 10rem);
+  justify-content: space-between;
+  align-items: center;
+  grid-gap: 1rem;
+  border: 1px solid red;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: skyblue;
+  width: 10rem;
+  height: 10rem;
+  font-size: 1rem;
+  border: none;
+  outline-color: #00A8EF;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 37.5em) {
+  .grid-container {
+    height: auto;
+  }
+}

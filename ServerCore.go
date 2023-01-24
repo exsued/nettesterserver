@@ -29,7 +29,7 @@ type PiTesterServer struct {
 	OnConnAccepted func(net.Addr)
     OnConnClosed func(net.Addr)
     OnConnError func(net.Addr, error)
-    OnMessageReaded func(string)
+    OnMessageReaded func(string, net.Addr)
     ctx     *context
 	mu      sync.Mutex
 
@@ -97,6 +97,9 @@ func (srv PiTesterServer) handle(conn net.Conn) error {
                 return err
             }
             break
+        }
+        if OnMessageReaded != nil {
+            OnMessageReaded(scanr.Text(), conn.RemoteAddr())
         }
         w.WriteString("!accepted!\n")
         w.Flush()

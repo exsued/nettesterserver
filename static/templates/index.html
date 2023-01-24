@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="refresh" content="10">
-  <link rel="stylesheet" href="main.css">
-  <title>Boxes</title>
+
+  <link rel="stylesheet" type="text/css" href="/static/templates/main.css">
+  <title>Pi Tester Server</title>
 </head>
 <body>
   <div class="grid-container">
-{{ range .Hosts }}
-    <button class="button">{{ .Name}}</button>
-{{ end }}  
+{{ range . }}
+  {{ if .Actived}}
+    <button class="button actived-button">{{ .Name}}</button>
+  {{ else }}
+    <button class="button disactived-button">{{ .Name}}</button>
+  {{ end }}
+{{ end }}
 	</div>
 </body>
 </html>

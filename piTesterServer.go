@@ -13,17 +13,44 @@ import (
 
 var(
     templatesPath = "static/templates/"
-    tmpl = template.Must(template.ParseFiles(
-    templatesPath+"index.html"))
+    //tmpl = template.Must(template.ParseFiles(
+    //templatesPath+"index.html"))
+    hosts []PiHost
 )
 
+type PiHost struct {
+    Name string
+    Ip string
+    Actived bool
+}
+
+func OnMessageReaded(str string, addr net.Addr){
+    contains := false
+    for i, host := range hosts {
+        if host.Name == str {
+            hosts[i].Ip = addr.String()
+            hosts[i].Actived = true
+            contains = true
+        }
+    }
+    if !contains {
+        hosts = append(hosts, PiHost {str, addr.String(), true})
+    }
+}
 
 func OnConnAccepted(addr net.Addr){
     log.Printf("accepted connection %v", addr)
 }
 
 func OnConnClosed(addr net.Addr){
-    log.Printf("error accepting connection %v", addr)
+    addrStr := addr.String()
+    for i, host := range hosts {
+        if host.Ip == addrStr {
+            fmt.Println(host.Ip + " disactived");
+            hosts[i].Actived = false
+        }
+    }
+    log.Printf("closed connection %v", addr)
 }
 
 func OnConnError(addr net.Addr, err error){
@@ -31,7 +58,8 @@ func OnConnError(addr net.Addr, err error){
 }
 
 func index(w http.ResponseWriter, r *http.Request){
-    tmpl.ExecuteTemplate(w, "index.html", nil)
+    tmpl := template.Must(template.ParseFiles(templatesPath+"index.html"))
+    tmpl.ExecuteTemplate(w, "index.html", hosts)
 }
 
 func HttpServer(httpAddr string) {
@@ -42,7 +70,10 @@ func HttpServer(httpAddr string) {
 	flag.Parse()
 	fmt.Println(":" + strconv.Itoa(port))
 
+    fs := http.FileServer(http.Dir("static"))
+
 	//Запуск сервера
+    http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/", index)
 
 	err := http.ListenAndServe(httpAddr, nil)
@@ -65,6 +96,8 @@ func main () {
     server.OnConnAccepted = OnConnAccepted
     server.OnConnClosed = OnConnClosed
     server.OnConnError = OnConnError
+    server.OnMessageReaded = OnMessageReaded
+
     go HttpServer(httpAddr)
     err := server.ListenAndServe()
     if err != nil {

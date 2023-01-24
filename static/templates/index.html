@@ -11,9 +11,9 @@
   <div class="grid-container">
 {{ range . }}
   {{ if .Actived}}
-    <button class="button actived-button">{{ .Name}}</button>
+    <button class="button actived-button">{{ .Name}} :: {{ .Ip }}</button>
   {{ else }}
-    <button class="button disactived-button">{{ .Name}}</button>
+    <button class="button disactived-button">{{ .Name}} :: {{ .Ip }}</button>
   {{ end }}
 {{ end }}
 	</div>

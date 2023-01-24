@@ -6,6 +6,7 @@ import (
     "time"
     "flag"
     "fmt"
+    "strings"
     "strconv"
     "net/http"
     "html/template"
@@ -13,6 +14,7 @@ import (
 
 var(
     templatesPath = "static/templates/"
+    packetPrefix = "name_pref"
     //tmpl = template.Must(template.ParseFiles(
     //templatesPath+"index.html"))
     hosts []PiHost
@@ -25,15 +27,27 @@ type PiHost struct {
 }
 
 func OnMessageReaded(str string, addr net.Addr){
+    if !strings.Contains(str, packetPrefix) {
+        return
+    }
+    str = strings.ReplaceAll(str, packetPrefix, "")
     contains := false
     for i, host := range hosts {
         if host.Name == str {
             hosts[i].Ip = addr.String()
             hosts[i].Actived = true
             contains = true
+            break
+        }else{
+            if host.Ip == addr.String(){
+                hosts[i].Name = str
+                contains = true
+                break
+            }
         }
     }
     if !contains {
+        fmt.Println(addr.String())
         hosts = append(hosts, PiHost {str, addr.String(), true})
     }
 }

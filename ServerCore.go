@@ -7,7 +7,13 @@ import (
     "bufio"
     "time"
     "io"
+    "encoding/gob"
 )
+
+type tcpPacket struct {
+        deviceName string
+        innerAddrs []string
+}
 
 type context struct {
 	stop chan bool
@@ -29,7 +35,7 @@ type PiTesterServer struct {
 	OnConnAccepted func(net.Addr)
     OnConnClosed func(net.Addr)
     OnConnError func(net.Addr, error)
-    OnMessageReaded func(string, net.Addr)
+    OnMessageReaded func(*tcpPacket, net.Addr)
     ctx     *context
 	mu      sync.Mutex
 
@@ -86,20 +92,17 @@ func (srv PiTesterServer) handle(conn net.Conn) error {
             }
         conn.Close()
     }()
-    r := bufio.NewReader(conn)
     w := bufio.NewWriter(conn)
-    scanr := bufio.NewScanner(r)
     for {
-        scanned := scanr.Scan()
-        if !scanned {
-            if err := scanr.Err(); err != nil {
-                log.Printf("%v(%v)", err, conn.RemoteAddr())
-                return err
-            }
-            break
+        dec := gob.NewDecoder(conn)
+        p := &tcpPacket{}
+        err := dec.Decode(p)
+        if err != nil {
+            log.Printf("%v(%v)", err, conn.RemoteAddr())
+            return err
         }
         if OnMessageReaded != nil {
-            OnMessageReaded(scanr.Text(), conn.RemoteAddr())
+            OnMessageReaded(p, conn.RemoteAddr())
         }
         w.WriteString("!accepted!\n")
         w.Flush()

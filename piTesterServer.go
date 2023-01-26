@@ -23,24 +23,23 @@ var(
 type PiHost struct {
     Name string
     Ip string
+    InnerIPs []string
     Actived bool
 }
 
-func OnMessageReaded(str string, addr net.Addr){
-    if !strings.Contains(str, packetPrefix) {
-        return
-    }
-    str = strings.ReplaceAll(str, packetPrefix, "")
+func OnMessageReaded(p *tcpPacket, addr net.Addr){
+    //Урезаю значение порта
+    outerAddr := strings.Split(addr.String(), ":")[0]
     contains := false
     for i, host := range hosts {
-        if host.Name == str {
-            hosts[i].Ip = addr.String()
+        if host.Name == p.deviceName {
+            hosts[i].Ip = outerAddr
             hosts[i].Actived = true
             contains = true
             break
-        }else{
-            if host.Ip == addr.String(){
-                hosts[i].Name = str
+        } else {
+            if host.Ip == outerAddr {
+                hosts[i].Name = p.deviceName
                 contains = true
                 break
             }
@@ -48,7 +47,7 @@ func OnMessageReaded(str string, addr net.Addr){
     }
     if !contains {
         fmt.Println(addr.String())
-        hosts = append(hosts, PiHost {str, addr.String(), true})
+        hosts = append(hosts, PiHost {p.deviceName, outerAddr, p.innerAddrs, true})
     }
 }
 

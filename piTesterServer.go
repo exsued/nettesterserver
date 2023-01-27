@@ -14,33 +14,34 @@ import (
 
 var(
     templatesPath = "static/templates/"
-    packetPrefix = "name_pref"
+    logPath = ""
     //tmpl = template.Must(template.ParseFiles(
     //templatesPath+"index.html"))
     hosts []PiHost
 )
 
+func BothLog(msg string){
+    log.Println(msg)
+    LogFile(msg, logPath)
+}
 type PiHost struct {
     Name string
     Ip string
     InnerIPs []string
     Actived bool
 }
-
 func OnMessageReaded(p tcpPacket, addr net.Addr){
     //Урезаю значение порта
     outerAddr := strings.Split(addr.String(), ":")[0]
     contains := false
     for i, host := range hosts {
         if host.Name == p.DeviceName {
-            fmt.Println(host.Name, p.DeviceName)
             hosts[i].Ip = outerAddr
             hosts[i].Actived = true
             contains = true
             break
         } else {
             if host.Ip == outerAddr {
-                fmt.Println(host.Ip, outerAddr)
                 hosts[i].Name = p.DeviceName
                 contains = true
                 break
@@ -49,34 +50,33 @@ func OnMessageReaded(p tcpPacket, addr net.Addr){
     }
     if !contains {
         hosts = append(hosts, PiHost {p.DeviceName, outerAddr, p.InnerAddrs, true})
-        log.Println("added new node", hosts[len(hosts) - 1])
+        msg := fmt.Sprintf("added new node %v\n", (hosts[len(hosts) - 1]))
+        BothLog(msg)
     }
 }
-
 func OnConnAccepted(addr net.Addr){
-    log.Printf("accepted connection %v", addr)
+    msg := fmt.Sprintf("accepted connection %v", addr)
+    BothLog(msg)
 }
-
 func OnConnClosed(addr net.Addr){
     addrStr := strings.Split(addr.String(), ":")[0]
     for i, host := range hosts {
         if host.Ip == addrStr {
-            fmt.Println(host.Ip + " disactived");
+            //fmt.Println(host.Ip + " disactived");
             hosts[i].Actived = false
         }
     }
-    log.Printf("closed connection %v", addr)
+    msg := fmt.Sprintf("closed connection %v", addr)
+    BothLog(msg)
 }
-
 func OnConnError(addr net.Addr, err error){
-    log.Printf("error accepting connection %v reason:  %s", addr, err)
+    msg := fmt.Sprintf("error accepting connection %v reason:  %s", addr, err)
+    BothLog(msg)
 }
-
 func index(w http.ResponseWriter, r *http.Request){
     tmpl := template.Must(template.ParseFiles(templatesPath+"index.html"))
     tmpl.ExecuteTemplate(w, "index.html", hosts)
 }
-
 func HttpServer(httpAddr string) {
     //Задание начальных настроек
 	var port int
@@ -93,7 +93,7 @@ func HttpServer(httpAddr string) {
 
 	err := http.ListenAndServe(httpAddr, nil)
 	if err != nil {
-		log.Print(err)
+        BothLog(err.Error())
 	}
 }
 //vds1.proxycom.ru:1288
@@ -104,6 +104,7 @@ func main () {
     var maxReadBuff int64
     flag.StringVar(&tcpAddr, "tcpAddress", "vds1.proxinet.ru:1288", "Address to tcp server")
     flag.StringVar(&httpAddr, "httpAddress", "127.0.0.1:1289", "Address to http server")
+    flag.StringVar(&logPath, "logPath", "./logs/", "Logs dir")
     flag.UintVar(&timeOut, "timeout", 5, "Conection idle timeout (sec)")
     flag.Int64Var(&maxReadBuff, "maxBuffSize", 4096, "Max buffer size")
     flag.Parse()
@@ -116,7 +117,7 @@ func main () {
     go HttpServer(httpAddr)
     err := server.ListenAndServe()
     if err != nil {
-        log.Println(err)
+        BothLog(err.Error())
     }
 }
 

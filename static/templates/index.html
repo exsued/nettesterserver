@@ -11,9 +11,11 @@
   <div class="grid-container">
 {{ range . }}
   {{ if .Actived}}
-    <button class="button actived-button">{{ .Name}} :: {{ .Ip }}</button>
+    <button class="button actived-button">{{ .Name}} :: {{ .Ip }}
+    {{ range .InnerIPs }} {{ . }} {{ end }}</button>
   {{ else }}
-    <button class="button disactived-button">{{ .Name}} :: {{ .Ip }}</button>
+    <button class="button disactived-button">{{ .Name}} :: {{ .Ip }}
+    {{ range .InnerIPs }} {{ . }} {{ end }}</button>
   {{ end }}
 {{ end }}
 	</div>

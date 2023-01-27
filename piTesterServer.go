@@ -27,27 +27,29 @@ type PiHost struct {
     Actived bool
 }
 
-func OnMessageReaded(p *tcpPacket, addr net.Addr){
+func OnMessageReaded(p tcpPacket, addr net.Addr){
     //Урезаю значение порта
     outerAddr := strings.Split(addr.String(), ":")[0]
     contains := false
     for i, host := range hosts {
-        if host.Name == p.deviceName {
+        if host.Name == p.DeviceName {
+            fmt.Println(host.Name, p.DeviceName)
             hosts[i].Ip = outerAddr
             hosts[i].Actived = true
             contains = true
             break
         } else {
             if host.Ip == outerAddr {
-                hosts[i].Name = p.deviceName
+                fmt.Println(host.Ip, outerAddr)
+                hosts[i].Name = p.DeviceName
                 contains = true
                 break
             }
         }
     }
     if !contains {
-        fmt.Println(addr.String())
-        hosts = append(hosts, PiHost {p.deviceName, outerAddr, p.innerAddrs, true})
+        hosts = append(hosts, PiHost {p.DeviceName, outerAddr, p.InnerAddrs, true})
+        log.Println("added new node", hosts[len(hosts) - 1])
     }
 }
 
@@ -102,7 +104,7 @@ func main () {
     var maxReadBuff int64
     flag.StringVar(&tcpAddr, "tcpAddress", "vds1.proxinet.ru:1288", "Address to tcp server")
     flag.StringVar(&httpAddr, "httpAddress", "127.0.0.1:1289", "Address to http server")
-    flag.UintVar(&timeOut, "timeout", 3, "Conection idle timeout (sec)")
+    flag.UintVar(&timeOut, "timeout", 5, "Conection idle timeout (sec)")
     flag.Int64Var(&maxReadBuff, "maxBuffSize", 4096, "Max buffer size")
     flag.Parse()
     server := NewPiTesterServer(tcpAddr, time.Duration(timeOut) * time.Second, maxReadBuff)

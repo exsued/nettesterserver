@@ -58,7 +58,7 @@ func OnConnAccepted(addr net.Addr){
 }
 
 func OnConnClosed(addr net.Addr){
-    addrStr := addr.String()
+    addrStr := strings.Split(addr.String(), ":")[0]
     for i, host := range hosts {
         if host.Ip == addrStr {
             fmt.Println(host.Ip + " disactived");

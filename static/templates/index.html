@@ -14,6 +14,7 @@
         <td>Имя</td>
         <td>Внешний IP</td>
         <td>Внутренний IP</td>
+        <td>MAC</td>
       </tr>
     {{ range . }}
       <tr>
@@ -24,9 +25,16 @@
         {{end}}
         <td>{{.Name}}</td>
         <td>{{.Ip}}</td>
+        <td>
         {{ range .InnerIPs }}
-        <td>{{ . }}</td>
+        {{ . }}
         {{ end }}
+        </td>
+         <td>
+        {{ range .MACs }}
+        {{ . }}
+        {{ end }}
+        </td>
       </tr>
     {{ end }}
     </table>

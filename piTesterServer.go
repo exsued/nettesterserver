@@ -28,7 +28,7 @@ type PiHost struct {
     Name string
     Ip string
     InnerIPs []string
-    MAC []string
+    MACs []string
     Actived bool
 }
 func OnMessageReaded(p tcpPacket, addr net.Addr){

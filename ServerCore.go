@@ -14,6 +14,7 @@ import (
 type tcpPacket struct {
         DeviceName string
         InnerAddrs []string
+        Macs []string
 }
 type context struct {
 	stop chan bool

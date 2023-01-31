@@ -28,6 +28,7 @@ type PiHost struct {
     Name string
     Ip string
     InnerIPs []string
+    MAC []string
     Actived bool
 }
 func OnMessageReaded(p tcpPacket, addr net.Addr){
@@ -35,20 +36,13 @@ func OnMessageReaded(p tcpPacket, addr net.Addr){
     contains := false
     for i, host := range hosts {
         if host.Name == p.DeviceName {
-            hosts[i].Ip = outerAddr
-            hosts[i].Actived = true
+            hosts[i] = PiHost{p.DeviceName, outerAddr, p.InnerAddrs, p.Macs, true}
             contains = true
             break
-        } else {
-            if host.Ip == outerAddr {
-                hosts[i].Name = p.DeviceName
-                contains = true
-                break
-            }
         }
     }
     if !contains {
-        hosts = append(hosts, PiHost {p.DeviceName, outerAddr, p.InnerAddrs, true})
+        hosts = append(hosts, PiHost {p.DeviceName, outerAddr, p.InnerAddrs, p.Macs, true})
         msg := fmt.Sprintf("added new node %v\n", (hosts[len(hosts) - 1]))
         BothLog(msg)
     }

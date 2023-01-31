@@ -7,17 +7,28 @@
   <link rel="stylesheet" type="text/css" href="/static/templates/main.css">
   <title>Pi Tester Server</title>
 </head>
-<body>
-  <div class="grid-container">
-{{ range . }}
-  {{ if .Actived}}
-    <button class="button actived-button">{{ .Name}} :: {{ .Ip }}
-    {{ range .InnerIPs }} {{ . }} {{ end }}</button>
-  {{ else }}
-    <button class="button disactived-button">{{ .Name}} :: {{ .Ip }}
-    {{ range .InnerIPs }} {{ . }} {{ end }}</button>
-  {{ end }}
-{{ end }}
-	</div>
-</body>
+  <body>
+    <table>
+      <tr>
+        <td>Активность</td>
+        <td>Имя</td>
+        <td>Внешний IP</td>
+        <td>Внутренний IP</td>
+      </tr>
+    {{ range . }}
+      <tr>
+        {{if .Actived}}
+        <td>On-line</td>
+        {{else}}
+        <td>Off-line</td>
+        {{end}}
+        <td>{{.Name}}</td>
+        <td>{{.Ip}}</td>
+        {{ range .InnerIPs }}
+        <td>{{ . }}</td>
+        {{ end }}
+      </tr>
+    {{ end }}
+    </table>
+  </body>
 </html>

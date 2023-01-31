@@ -31,8 +31,7 @@ type PiHost struct {
     Actived bool
 }
 func OnMessageReaded(p tcpPacket, addr net.Addr){
-    //Урезаю значение порта
-    outerAddr := strings.Split(addr.String(), ":")[0]
+    /*Урезаю значение порта*/ outerAddr := strings.Split(addr.String(), ":")[0]
     contains := false
     for i, host := range hosts {
         if host.Name == p.DeviceName {
@@ -62,7 +61,6 @@ func OnConnClosed(addr net.Addr){
     addrStr := strings.Split(addr.String(), ":")[0]
     for i, host := range hosts {
         if host.Ip == addrStr {
-            //fmt.Println(host.Ip + " disactived");
             hosts[i].Actived = false
         }
     }
@@ -96,7 +94,7 @@ func HttpServer(httpAddr string) {
         BothLog(err.Error())
 	}
 }
-//vds1.proxycom.ru:1288
+
 func main () {
     var tcpAddr string
     var httpAddr string
@@ -120,4 +118,3 @@ func main () {
         BothLog(err.Error())
     }
 }
-

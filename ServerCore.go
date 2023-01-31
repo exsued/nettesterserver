@@ -41,7 +41,7 @@ type PiTesterServer struct {
 func LogFile(out string, dirpath string) {
     nowtime := time.Now()
     finalString := nowtime.Format("15:04:05\t") + out + "\n"
-    fileName := dirpath + "piTestServer : " + nowtime.Format("2006-01-02") + ".txt"
+    fileName := dirpath + nowtime.Format("2006-01-02") + ".txt"
 
     f, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {

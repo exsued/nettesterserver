@@ -13,41 +13,19 @@ body {
   padding: 0;
 }
 
-.grid-container {
-  display: grid;
-  max-width: 100rem;
-  height: 100rem;
-  overflow: auto;
-  grid-template-columns: repeat(auto-fill, 10rem);
-  justify-content: space-between;
-  align-items: center;
-  grid-gap: 1rem;
-  border: 1px solid red;
-}
-
-.button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: skyblue;
-  width: 10rem;
-  height: 10rem;
-  font-size: 1rem;
-  border: none;
-  outline-color: #00A8EF;
-  cursor: pointer;
-}
-
-.actived-button {
-  .button;
-  background: green;
-}
-.button .disactived-button {
-  .button;
-  background: gray;
-}
-@media screen and (min-width: 37.5em) {
-  .grid-container {
-    height: auto;
-  }
-}
+TABLE {
+    border-collapse: collapse; /* Убираем двойные линии между ячейками */
+    width: 300px; /* Ширина таблицы */
+   }
+   TH { 
+    background: #fc0; /* Цвет фона ячейки */
+    text-align: left; /* Выравнивание по левому краю */
+   }
+   TD {
+    background: #fff; /* Цвет фона ячеек */
+    text-align: center; /* Выравнивание по центру */
+   }
+   TH, TD {
+    border: 1px solid black; /* Параметры рамки */
+    padding: 4px; /* Поля вокруг текста */
+   }

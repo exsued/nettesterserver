@@ -19,9 +19,9 @@
     {{ range . }}
       <tr>
         {{if .Actived}}
-        <td>On-line</td>
+        <td style="background : green;">On-line</td>
         {{else}}
-        <td>Off-line</td>
+        <td style="background : red;">Off-line</td>
         {{end}}
         <td>{{.Name}}</td>
         <td>{{.Ip}}</td>
